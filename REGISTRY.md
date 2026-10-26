@@ -4,20 +4,25 @@ Package is published at https://github.com/xgdgsc/Somoclu.jl (`v1.7.6`).
 
 ## One-time setup
 
-1. Install the [JuliaRegistrator](https://github.com/apps/juliareigistrator) GitHub App on `xgdgsc/Somoclu.jl` (or the whole account).
-2. Ensure [TagBot](https://github.com/JuliaRegistries/TagBot) workflow is present (already in `.github/workflows/TagBot.yml`).
+### Option A — GitHub App (comment bot)
 
-## Register this release
-
-On any commit / release / issue comment:
+1. Install: https://github.com/apps/juliateam-registrator/installations/new  
+   Choose **Only select repositories** → `Somoclu.jl`.
+2. TagBot workflow is already in `.github/workflows/TagBot.yml`.
+3. Comment on [issue #1](https://github.com/xgdgsc/Somoclu.jl/issues/1) or the release commit:
 
 ```text
 @JuliaRegistrator register
 ```
 
-JuliaRegistrator opens a PR to [JuliaRegistries/General](https://github.com/JuliaRegistries/General). New packages typically need ~3 days for AutoMerge (CI green, no name conflicts).
+### Option B — JuliaHub web UI (no App install)
 
-After merge, install with:
+1. Open https://juliahub.com and log in with GitHub.
+2. Left menu → **Register packages**, submit `https://github.com/xgdgsc/Somoclu.jl`.
+
+Either path opens a PR to [JuliaRegistries/General](https://github.com/JuliaRegistries/General). New packages typically need ~3 days for AutoMerge.
+
+After merge:
 
 ```julia
 using Pkg
