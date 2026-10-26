@@ -26,8 +26,9 @@ matching Python `Somoclu.get_surface_state`. `data` is `nDimensions × nVectors`
 """
 function get_surface_state(som::Som, data::Union{Nothing,AbstractMatrix{<:Real}}=nothing)
     som.codebook === nothing && error("The codebook is not available. Train a map first.")
-    d = data === nothing ? som.data : Matrix{Float32}(data)
-    d === nothing && error("No data available; pass data or train! first.")
+    raw = data === nothing ? som.data : data
+    raw === nothing && error("No data available; pass data or train! first.")
+    d = Matrix{Float32}(raw)  # densify sparse if needed
     nDim, nVec = size(d)
     size(som.codebook, 1) == nDim || throw(DimensionMismatch("data/codebook dimensions"))
     nNeurons = som.ncolumns * som.nrows

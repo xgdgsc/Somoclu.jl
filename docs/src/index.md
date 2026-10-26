@@ -7,9 +7,9 @@ Somoclu
 Pure-Julia port of [Somoclu](https://github.com/peterwittek/somoclu) — massively parallel
 self-organizing maps — using
 [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl)
-for CPU (PoCL) and GPU backends. No C++ dependency.
+for dense CPU (PoCL) / GPU backends, plus sparse CPU training. No C++ dependency.
 
-Version **1.7.6** matches the current [Python `somoclu`](https://pypi.org/project/somoclu/) release.
+See [Compared to C++](man/vs_cpp.md) for a feature matrix versus the upstream library.
 
 ## Installation
 
@@ -37,14 +37,19 @@ som.bmus      # 2 × nVectors (1-based)
 som.codebook  # nDimensions × (ncolumns * nrows)
 ```
 
+Sparse:
+
+```julia
+using SparseArrays, Somoclu
+train!(Som(40, 30; gridtype="rectangular"), sprand(Float32, 5000, 200, 0.02); epochs=10)
+```
+
 ## Features
 
-- Dense batch SOM training (same update rule as Somoclu’s dense CPU kernel)
-- Planar / toroid topologies
-- Rectangular / hexagonal grids (legacy `"square"` uses hexagonal distances)
-- Gaussian / bubble neighbourhoods
-- Random or PCA codebook initialization
-- U-matrix and best-matching units (BMUs)
+- Dense batch SOM (KernelAbstractions; same rule as C++ dense CPU kernel)
+- Sparse CPU SOM (`SparseMatrixCSC`; same rule as C++ `sparseCpuKernels.cpp`)
+- Planar / toroid; rectangular / hexagonal (legacy `"square"` → hex distances)
+- Gaussian / bubble; random or PCA init; U-matrix / BMUs
 - PlotlyLight visualizations (`view_umatrix`, …)
 
 ## Citation
@@ -57,6 +62,6 @@ Somoclu: An Efficient Parallel Library for Self-Organizing Maps.
 ## Package overview
 
 ```@contents
-Pages = ["man/getting_started.md", "man/visualization.md", "api.md"]
+Pages = ["man/getting_started.md", "man/visualization.md", "man/vs_cpp.md", "api.md"]
 Depth = 2
 ```

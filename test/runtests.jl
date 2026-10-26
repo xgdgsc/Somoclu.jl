@@ -1,5 +1,7 @@
 using Somoclu
 using PlotlyLight
+using Random
+using SparseArrays
 using Test
 
 @testset "Somoclu.jl" begin
@@ -109,5 +111,64 @@ using Test
         train!(som, rand(Float32, 2, 20); epochs=2)
         p = view_umatrix(som; bestmatches=true)
         @test p isa PlotlyLight.Plot
+    end
+
+    @testset "sparse epoch-0 matches dense update" begin
+        # First epoch from zero codebook: all BMUs at (0,0), updates identical.
+        dense = Float32[0.1 0.3; 0.2 0.4]
+        sp = sparse(dense)
+        cb_s = zeros(Float32, 2, 4)
+        cb_d = zeros(Float32, 2, 4)
+        bx = zeros(Int32, 2); by = zeros(Int32, 2)
+        X2 = Somoclu.sparse_sample_sqnorms(sp)
+        W2 = zeros(Float32, 4)
+        Somoclu.train_epoch_sparse!(cb_s, sp, bx, by, X2, W2, 2, 2, 2,
+            1.0f0, 0.1f0, false, true, 0.5f0, true, false)
+        # dense update with BMUs fixed at (0,0)
+        for idx in 1:4
+            som_y = (idx - 1) ÷ 2; som_x = (idx - 1) % 2
+            local_num = zeros(Float32, 2); local_den = 0.0f0
+            for n in 1:2
+                dist = Somoclu.map_distance(som_x, som_y, 0, 0, 2, 2, true, false)
+                w = Somoclu.get_weight(dist, 1.0f0, 0.1f0, false, true, 0.5f0)
+                local_den += w
+                local_num .+= w .* dense[:, n]
+            end
+            cb_d[:, idx] .= local_num ./ local_den
+        end
+        @test sum(abs, cb_s .- cb_d) < 1e-6
+        @test all(bx .== 0) && all(by .== 0)
+    end
+
+    @testset "sparse train! reproducibility" begin
+        Random.seed!(7)
+        data = sprand(Float32, 30, 25, 0.08)
+        for j in 1:size(data, 2)
+            nnz(data[:, j]) == 0 && (data[1, j] = 1f0)
+        end
+        cb0 = zeros(Float32, 30, 4 * 3)
+        s1 = Som(4, 3; initialcodebook=copy(cb0), gridtype="rectangular")
+        s2 = Som(4, 3; initialcodebook=copy(cb0), gridtype="rectangular")
+        train!(s1, data; epochs=4)
+        train!(s2, data; epochs=4)
+        @test s1.codebook == s2.codebook
+        @test s1.bmus == s2.bmus
+    end
+
+    @testset "sparse smoke (true sparsity)" begin
+        Random.seed!(1)
+        data = sprand(Float32, 50, 40, 0.05)
+        # ensure no empty columns (C++ still processes them; keep nonzero for stability)
+        for j in 1:size(data, 2)
+            if nnz(data[:, j]) == 0
+                data[1, j] = 1.0f0
+            end
+        end
+        som = Som(8, 6; gridtype="rectangular", compactsupport=true)
+        train!(som, data; epochs=5)
+        @test size(som.codebook) == (50, 48)
+        @test size(som.bmus) == (2, 40)
+        @test all(isfinite, som.codebook)
+        @test som.data isa SparseMatrixCSC
     end
 end

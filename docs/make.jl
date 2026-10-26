@@ -21,6 +21,7 @@ makedocs(
         "Manual" => [
             "Getting started" => "man/getting_started.md",
             "Visualization" => "man/visualization.md",
+            "Compared to C++" => "man/vs_cpp.md",
         ],
         "API Reference" => "api.md",
     ],

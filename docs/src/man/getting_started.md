@@ -34,6 +34,25 @@ train!(som, data;
 )
 ```
 
+### Sparse data
+
+Pass a `SparseMatrixCSC` to use the C++-compatible sparse CPU kernel
+(`sparseCpuKernels.cpp`):
+
+- Layout: `nDimensions × nVectors` (each **column** is one sample)
+- Codebook stays **dense**; neighbourhood update only touches nonzero features
+- Runs on CPU with `Threads` — **`som.backend` is ignored**
+- Prefer this for high-dimensional sparse inputs (e.g. bag-of-words)
+
+```julia
+using SparseArrays
+data = sprand(Float32, 10_000, 500, 0.01)  # features × samples
+som = Som(40, 30; gridtype="rectangular")
+train!(som, data; epochs=10)
+```
+
+See [Compared to C++](vs_cpp.md) for how this maps to the upstream `-k 2` path.
+
 After training:
 
 | Field | Shape | Meaning |
@@ -94,6 +113,8 @@ Codebook / data are moved onto the chosen backend during `train!`; results
 
 ## Numerical notes
 
-Training follows Somoclu’s dense CPU kernel. The Python interface test vector is
-reproduced to about `1e-5`. The legacy `"square"` grid uses hexagonal map
-distances (C++ only special-cased `"rectangular"`); that quirk is preserved.
+Dense training follows Somoclu’s dense CPU kernel; the Python interface test
+vector is reproduced to about `1e-5`. Sparse training follows
+`sparseCpuKernels.cpp` (squared-Euclidean BMUs). The legacy `"square"` grid uses
+hexagonal map distances (C++ only special-cased `"rectangular"`); that quirk is
+preserved.

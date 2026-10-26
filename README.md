@@ -6,25 +6,17 @@
 
 Pure-Julia port of [Somoclu](https://github.com/peterwittek/somoclu) — massively parallel
 self-organizing maps — using [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl)
-for CPU (PoCL) and GPU backends. No C++ dependency.
+for dense CPU (PoCL) / GPU backends, plus a sparse CPU path matching C++
+`sparseCpuKernels.cpp`. No C++ dependency.
 
-Version **1.7.6** matches the current [Python `somoclu`](https://pypi.org/project/somoclu/) release.
-
-**Documentation:** [stable](https://xgdgsc.github.io/Somoclu.jl/stable) · [dev](https://xgdgsc.github.io/Somoclu.jl/dev)
+**Documentation:** [stable](https://xgdgsc.github.io/Somoclu.jl/stable) · [dev](https://xgdgsc.github.io/Somoclu.jl/dev) · [vs C++](https://xgdgsc.github.io/Somoclu.jl/dev/man/vs_cpp/)
 
 ## Installation
 
-Once registered in the General registry:
-
 ```julia
 using Pkg
-Pkg.add("Somoclu")
-```
-
-Until then, install from GitHub:
-
-```julia
-using Pkg
+Pkg.add("Somoclu")   # after General registry merge
+# or:
 Pkg.add(url="https://github.com/xgdgsc/Somoclu.jl")
 ```
 
@@ -32,12 +24,12 @@ Requires Julia **1.13+**.
 
 ## Features
 
-- Dense batch SOM training (same update rule as Somoclu’s dense CPU kernel)
-- Planar / toroid topologies
-- Rectangular / hexagonal grids (plus legacy `"square"` = hexagonal distances)
-- Gaussian / bubble neighbourhoods
+- Dense batch SOM training (KernelAbstractions; same rule as Somoclu’s dense CPU kernel)
+- Sparse CPU training (`SparseMatrixCSC`; same rule as C++ `sparseCpuKernels.cpp`)
+- Planar / toroid topologies; rectangular / hexagonal grids (legacy `"square"` → hex distances)
+- Gaussian / bubble neighbourhoods; linear / exponential cooling
 - Random or PCA codebook initialization
-- U-matrix and best-matching units (BMUs)
+- U-matrix and BMUs
 - PlotlyLight visualizations (`view_umatrix`, `view_component_planes`, …)
 
 ## Usage
@@ -55,6 +47,15 @@ som.bmus      # 2 × nVectors (1-based)
 som.umatrix   # nrows × ncolumns
 ```
 
+### Sparse data
+
+```julia
+using SparseArrays, Somoclu
+data = sprand(Float32, 10_000, 500, 0.01)  # features × samples
+som = Som(40, 30; gridtype="rectangular")
+train!(som, data; epochs=10)   # CPU sparse kernel; codebook stays dense
+```
+
 ### Visualization (PlotlyLight)
 
 ```julia
@@ -62,12 +63,10 @@ view_umatrix(som; bestmatches=true, colorbar=true)
 view_component_planes(som; dimensions=1:2)
 view_activation_map(som; data_index=1)
 view_similarity_matrix(som)
-
-# save HTML
 view_umatrix(som; filename="umatrix.html")
 ```
 
-### GPU (CUDA.jl example)
+### GPU (CUDA.jl example; dense only)
 
 ```julia
 using CUDA, Somoclu
@@ -75,15 +74,22 @@ som = Som(40, 30; backend=CUDABackend())
 train!(som, data)
 ```
 
-## Numerical compatibility
+## Compared to C++ Somoclu
 
-Training numerics follow the Somoclu C++ dense CPU kernel
-(`denseCpuKernels.cpp`, `mapDistanceFunctions.cpp`, `training.cpp`, `uMatrix.cpp`).
-The Python interface test vector is reproduced exactly (to `1e-5`).
+| | C++ | Somoclu.jl |
+|--|-----|------------|
+| Dense training | CPU (+ optional CUDA) | KA: PoCL `CPU()`, CUDA, AMDGPU, oneAPI, Metal |
+| Sparse training | CPU (`-k 2` / libsvm) | `SparseMatrixCSC` CPU (+ Threads) |
+| MPI | Optional | **No** |
+| CLI / file IO (`.lrn`, libsvm, dumps) | Yes | **No** (in-memory) |
+| `norm-inf` / `norm-p` distances | Dense CPU | **No** (Euclidean only) |
+| Snapshots / `cluster()` | CLI / Python | **No** |
+| Plotly `view_*` | — | **Yes** |
 
-The historical Julia wrapper’s axis swap (`nSomX = nrows`, `nSomY = ncolumns`) and
-`"square"` → hexagonal map-distance quirk (C++ only special-cased `"rectangular"`) are
-preserved.
+Dense CPU numerics match the C++/Python test vectors (`≈1e-5`). Legacy Julia quirks
+kept: `nSomX = nrows`, `nSomY = ncolumns`, and `"square"` → hexagonal map distances.
+
+Full table: [Compared to C++](https://xgdgsc.github.io/Somoclu.jl/dev/man/vs_cpp/).
 
 ## Citation
 

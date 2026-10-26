@@ -1,6 +1,7 @@
 # Registering Somoclu.jl in the General registry
 
-Package is published at https://github.com/xgdgsc/Somoclu.jl (`v1.7.6`).
+Package is published at https://github.com/xgdgsc/Somoclu.jl (see `Project.toml` for version).
+
 
 ## One-time setup
 
