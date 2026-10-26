@@ -42,15 +42,55 @@ After training:
 | `som.bmus` | `2 × nVectors` | Best-matching unit coords (1-based) |
 | `som.umatrix` | `nrows × ncolumns` | Unified distance matrix |
 
-## GPU backends
+## KernelAbstractions backends
 
-Any KernelAbstractions backend works. Example with CUDA:
+`Som` takes any [KernelAbstractions](https://github.com/JuliaGPU/KernelAbstractions.jl)
+backend via `backend=...`. Default is `CPU()` (multithreaded / PoCL).
+Install the matching GPU package first; APIs below follow current KA conventions.
+
+### CPU (default)
+
+```julia
+using Somoclu
+som = Som(50, 50)                          # backend = CPU()
+# som = Som(50, 50; backend = CPU())
+train!(som, data)
+```
+
+### NVIDIA — CUDA.jl
 
 ```julia
 using CUDA, Somoclu
 som = Som(50, 50; backend = CUDABackend())
 train!(som, data)
 ```
+
+### AMD — AMDGPU.jl
+
+```julia
+using AMDGPU, Somoclu
+som = Som(50, 50; backend = ROCBackend())
+train!(som, data)
+```
+
+### Intel — oneAPI.jl
+
+```julia
+using oneAPI, Somoclu
+som = Som(50, 50; backend = oneAPIBackend())
+train!(som, data)
+```
+
+### Apple Silicon — Metal.jl
+
+```julia
+using Metal, Somoclu
+som = Som(50, 50; backend = MetalBackend())
+train!(som, data)
+```
+
+Codebook / data are moved onto the chosen backend during `train!`; results
+(`som.codebook`, `som.bmus`, `som.umatrix`) are copied back to host arrays.
 
 ## Numerical notes
 
