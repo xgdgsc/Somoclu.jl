@@ -1,5 +1,11 @@
 # Somoclu.jl
 
+```@raw html
+<p align="center">
+  <img src="assets/logo.svg" alt="Somoclu.jl logo" width="200"/>
+</p>
+```
+
 ```@docs
 Somoclu
 ```

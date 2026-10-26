@@ -1,5 +1,9 @@
 # Somoclu.jl
 
+<p align="center">
+  <img src="assets/logo.svg" alt="Somoclu.jl logo" width="220"/>
+</p>
+
 [![Docs](https://img.shields.io/badge/docs-stable-blue.svg)](https://xgdgsc.github.io/Somoclu.jl/stable)
 [![Docs](https://img.shields.io/badge/docs-dev-blue.svg)](https://xgdgsc.github.io/Somoclu.jl/dev)
 [![CI](https://github.com/xgdgsc/Somoclu.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/xgdgsc/Somoclu.jl/actions/workflows/CI.yml)

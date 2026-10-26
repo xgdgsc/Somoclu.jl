@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Somoclu.jl logo">
+  <title>Somoclu.jl</title>
+  <desc>Hexagonal self-organizing map with Julia purple, red, and green codebook prototypes</desc>
+  <defs>
+    <filter id="soft" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="2.5" flood-color="#1a1a1a" flood-opacity="0.18"/>
+    </filter>
+    <radialGradient id="hi" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <g id="som-lattice" filter="url(#soft)">
+    <path d="M 178.27,42.88 L 178.27,85.12 L 141.68,106.24 L 105.10,85.12 L 105.10,42.88 L 141.68,21.76 Z" fill="#a061be" stroke="#804e98" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 254.48,42.88 L 254.48,85.12 L 217.89,106.24 L 181.31,85.12 L 181.31,42.88 L 217.89,21.76 Z" fill="#a061be" stroke="#804e98" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 330.69,42.88 L 330.69,85.12 L 294.11,106.24 L 257.52,85.12 L 257.52,42.88 L 294.11,21.76 Z" fill="#9767b1" stroke="#79528e" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 406.90,42.88 L 406.90,85.12 L 370.32,106.24 L 333.73,85.12 L 333.73,42.88 L 370.32,21.76 Z" fill="#718175" stroke="#5a675e" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 140.16,108.88 L 140.16,151.12 L 103.58,172.24 L 67.00,151.12 L 67.00,108.88 L 103.58,87.76 Z" fill="#a061be" stroke="#804e98" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 216.37,108.88 L 216.37,151.12 L 179.79,172.24 L 143.21,151.12 L 143.21,108.88 L 179.79,87.76 Z" fill="#a061be" stroke="#804e98" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 292.58,108.88 L 292.58,151.12 L 256.00,172.24 L 219.42,151.12 L 219.42,108.88 L 256.00,87.76 Z" fill="#9f61bc" stroke="#7f4e96" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 368.79,108.88 L 368.79,151.12 L 332.21,172.24 L 295.63,151.12 L 295.63,108.88 L 332.21,87.76 Z" fill="#718175" stroke="#5a675e" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 445.00,108.88 L 445.00,151.12 L 408.42,172.24 L 371.84,151.12 L 371.84,108.88 L 408.42,87.76 Z" fill="#499d3a" stroke="#3a7e2e" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 102.06,174.88 L 102.06,217.12 L 65.47,238.24 L 28.89,217.12 L 28.89,174.88 L 65.47,153.76 Z" fill="#a55eb2" stroke="#844b8e" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 178.27,174.88 L 178.27,217.12 L 141.68,238.24 L 105.10,217.12 L 105.10,174.88 L 141.68,153.76 Z" fill="#a160bc" stroke="#814d96" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 254.48,174.88 L 254.48,217.12 L 217.89,238.24 L 181.31,217.12 L 181.31,174.88 L 217.89,153.76 Z" fill="#a061bb" stroke="#804e96" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 330.69,174.88 L 330.69,217.12 L 294.11,238.24 L 257.52,217.12 L 257.52,174.88 L 294.11,153.76 Z" fill="#787d71" stroke="#60645a" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 406.90,174.88 L 406.90,217.12 L 370.32,238.24 L 333.73,217.12 L 333.73,174.88 L 370.32,153.76 Z" fill="#41a22e" stroke="#348225" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 483.11,174.88 L 483.11,217.12 L 446.53,238.24 L 409.94,217.12 L 409.94,174.88 L 446.53,153.76 Z" fill="#40a32d" stroke="#338224" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 63.95,240.88 L 63.95,283.12 L 27.37,304.24 L -9.21,283.12 L -9.21,240.88 L 27.37,219.76 Z" fill="#bb537b" stroke="#964262" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 140.16,240.88 L 140.16,283.12 L 103.58,304.24 L 67.00,283.12 L 67.00,240.88 L 103.58,219.76 Z" fill="#bb537b" stroke="#964262" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 216.37,240.88 L 216.37,283.12 L 179.79,304.24 L 143.21,283.12 L 143.21,240.88 L 179.79,219.76 Z" fill="#b35876" stroke="#8f465e" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 292.58,240.88 L 292.58,283.12 L 256.00,304.24 L 219.42,283.12 L 219.42,240.88 L 256.00,219.76 Z" fill="#936d62" stroke="#76574e" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 368.79,240.88 L 368.79,283.12 L 332.21,304.24 L 295.63,283.12 L 295.63,240.88 L 332.21,219.76 Z" fill="#43a12f" stroke="#368126" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 445.00,240.88 L 445.00,283.12 L 408.42,304.24 L 371.84,283.12 L 371.84,240.88 L 408.42,219.76 Z" fill="#3fa32d" stroke="#328224" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 521.21,240.88 L 521.21,283.12 L 484.63,304.24 L 448.05,283.12 L 448.05,240.88 L 484.63,219.76 Z" fill="#3fa32d" stroke="#328224" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 102.06,306.88 L 102.06,349.12 L 65.47,370.24 L 28.89,349.12 L 28.89,306.88 L 65.47,285.76 Z" fill="#d34646" stroke="#a93838" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 178.27,306.88 L 178.27,349.12 L 141.68,370.24 L 105.10,349.12 L 105.10,306.88 L 141.68,285.76 Z" fill="#d7443c" stroke="#ac3630" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 254.48,306.88 L 254.48,349.12 L 217.89,370.24 L 181.31,349.12 L 181.31,306.88 L 217.89,285.76 Z" fill="#d5453c" stroke="#aa3730" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 330.69,306.88 L 330.69,349.12 L 294.11,370.24 L 257.52,349.12 L 257.52,306.88 L 294.11,285.76 Z" fill="#8d723e" stroke="#715b32" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 406.90,306.88 L 406.90,349.12 L 370.32,370.24 L 333.73,349.12 L 333.73,306.88 L 370.32,285.76 Z" fill="#41a22d" stroke="#348224" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 483.11,306.88 L 483.11,349.12 L 446.53,370.24 L 409.94,349.12 L 409.94,306.88 L 446.53,285.76 Z" fill="#40a32d" stroke="#338224" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 140.16,372.88 L 140.16,415.12 L 103.58,436.24 L 67.00,415.12 L 67.00,372.88 L 103.58,351.76 Z" fill="#d8443a" stroke="#ad362e" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 216.37,372.88 L 216.37,415.12 L 179.79,436.24 L 143.21,415.12 L 143.21,372.88 L 179.79,351.76 Z" fill="#d8443a" stroke="#ad362e" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 292.58,372.88 L 292.58,415.12 L 256.00,436.24 L 219.42,415.12 L 219.42,372.88 L 256.00,351.76 Z" fill="#d6453a" stroke="#ab372e" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 368.79,372.88 L 368.79,415.12 L 332.21,436.24 L 295.63,415.12 L 295.63,372.88 L 332.21,351.76 Z" fill="#8c7335" stroke="#705c2a" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 445.00,372.88 L 445.00,415.12 L 408.42,436.24 L 371.84,415.12 L 371.84,372.88 L 408.42,351.76 Z" fill="#4e9a2e" stroke="#3e7b25" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 178.27,438.88 L 178.27,481.12 L 141.68,502.24 L 105.10,481.12 L 105.10,438.88 L 141.68,417.76 Z" fill="#d8443a" stroke="#ad362e" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 254.48,438.88 L 254.48,481.12 L 217.89,502.24 L 181.31,481.12 L 181.31,438.88 L 217.89,417.76 Z" fill="#d8443a" stroke="#ad362e" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 330.69,438.88 L 330.69,481.12 L 294.11,502.24 L 257.52,481.12 L 257.52,438.88 L 294.11,417.76 Z" fill="#ca4c39" stroke="#a23d2e" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 406.90,438.88 L 406.90,481.12 L 370.32,502.24 L 333.73,481.12 L 333.73,438.88 L 370.32,417.76 Z" fill="#8c7335" stroke="#705c2a" stroke-width="1.5" stroke-linejoin="round"/>
+  </g>
+  <g id="codebook-prototypes">
+    <circle cx="179.79" cy="130.00" r="26.38" fill="#ffffff"/>
+    <circle cx="179.79" cy="130.00" r="22.88" fill="#9558B2"/>
+    <circle cx="179.79" cy="130.00" r="22.88" fill="url(#hi)"/>
+    <circle cx="179.79" cy="394.00" r="26.38" fill="#ffffff"/>
+    <circle cx="179.79" cy="394.00" r="22.88" fill="#CB3C33"/>
+    <circle cx="179.79" cy="394.00" r="22.88" fill="url(#hi)"/>
+    <circle cx="408.42" cy="262.00" r="26.38" fill="#ffffff"/>
+    <circle cx="408.42" cy="262.00" r="22.88" fill="#389826"/>
+    <circle cx="408.42" cy="262.00" r="22.88" fill="url(#hi)"/>
+  </g>
+  <g id="data-samples">
+    <circle cx="236.71" cy="41.47" r="7" fill="#9558B2" opacity="0.8"/>
+    <circle cx="321.47" cy="60.51" r="7" fill="#9558B2" opacity="0.8"/>
+    <circle cx="59.68" cy="170.45" r="7" fill="#CB3C33" opacity="0.8"/>
+    <circle cx="122.88" cy="103.36" r="7" fill="#CB3C33" opacity="0.8"/>
+    <circle cx="433.44" cy="386.25" r="7" fill="#389826" opacity="0.8"/>
+    <circle cx="365.74" cy="437.63" r="7" fill="#389826" opacity="0.8"/>
+  </g>
+  <circle cx="256.0" cy="262.0" r="198.00" fill="none" stroke="#4063D8" stroke-width="2.75" stroke-dasharray="9 12" opacity="0.28"/>
+</svg>
