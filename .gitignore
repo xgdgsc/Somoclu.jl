@@ -1,0 +1,13 @@
+*.jl.*.cov
+*.jl.cov
+*.jl.mem
+Manifest.toml
+/docs/build/
+/docs/site/
+.DS_Store
+/tmp/
+_*
+examples/figures/**/*.html
+examples/figures/**/*.csv
+examples/figures/**/*.txt
+!examples/figures/compare/umatrix_side_by_side.png
