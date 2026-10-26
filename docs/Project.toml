@@ -1,0 +1,9 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+Somoclu = "7c95e396-62b9-47da-a5ca-4c9ee9cbf5f4"
+
+[sources]
+Somoclu = {path = "R:\\Github\\Somoclu.jl"}
+
+[compat]
+Documenter = "1"

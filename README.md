@@ -1,10 +1,16 @@
 # Somoclu.jl
 
+[![Docs](https://img.shields.io/badge/docs-stable-blue.svg)](https://xgdgsc.github.io/Somoclu.jl/stable)
+[![Docs](https://img.shields.io/badge/docs-dev-blue.svg)](https://xgdgsc.github.io/Somoclu.jl/dev)
+[![CI](https://github.com/xgdgsc/Somoclu.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/xgdgsc/Somoclu.jl/actions/workflows/CI.yml)
+
 Pure-Julia port of [Somoclu](https://github.com/peterwittek/somoclu) — massively parallel
 self-organizing maps — using [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl)
 for CPU (PoCL) and GPU backends. No C++ dependency.
 
 Version **1.7.6** matches the current [Python `somoclu`](https://pypi.org/project/somoclu/) release.
+
+**Documentation:** [stable](https://xgdgsc.github.io/Somoclu.jl/stable) · [dev](https://xgdgsc.github.io/Somoclu.jl/dev)
 
 ## Installation
 
