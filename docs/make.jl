@@ -11,6 +11,7 @@ makedocs(
         prettyurls = get(ENV, "CI", "false") == "true",
         canonical = "https://xgdgsc.github.io/Somoclu.jl",
         edit_link = "main",
+        assets = ["assets/fix-home-link.js"],
     ),
     pages = [
         "Home" => "index.md",
