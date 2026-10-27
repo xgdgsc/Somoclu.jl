@@ -171,4 +171,93 @@ using Test
         @test all(isfinite, som.codebook)
         @test som.data isa SparseMatrixCSC
     end
+
+    @testset "vect_distance parse and feature_distance" begin
+        @test Somoclu.parse_vect_distance("euclidean") == (:euclidean, 2.0f0)
+        @test Somoclu.parse_vect_distance("norm-inf") == (:inf, 0.0f0)
+        @test Somoclu.parse_vect_distance("norm-1") == (:p, 1.0f0)
+        @test Somoclu.parse_vect_distance("norm-2.5") == (:p, 2.5f0)
+        @test_throws ErrorException Somoclu.parse_vect_distance("manhattan")
+
+        cb = Float32[0 3; 0 4]  # neurons: (0,0) and (3,4)
+        x = reshape(Float32[0, 0], 2, 1)
+        @test Somoclu.feature_distance(cb, 2, x, 1, 2, 0, 2.0f0) ≈ 5.0f0
+        @test Somoclu.feature_distance(cb, 2, x, 1, 2, 1, 0.0f0) ≈ 4.0f0  # inf
+        @test Somoclu.feature_distance(cb, 2, x, 1, 2, 2, 1.0f0) ≈ 7.0f0  # L1
+    end
+
+    @testset "norm-inf / norm-p training smoke" begin
+        data = Float32[0.0 1.0 0.0; 0.0 0.0 1.0]
+        cb0 = zeros(Float32, 2, 4)
+        s_eu = Som(2, 2; initialcodebook=copy(cb0), gridtype="rectangular",
+                   compactsupport=false, vect_distance="euclidean")
+        s_inf = Som(2, 2; initialcodebook=copy(cb0), gridtype="rectangular",
+                    compactsupport=false, vect_distance="norm-inf")
+        s_l1 = Som(2, 2; initialcodebook=copy(cb0), gridtype="rectangular",
+                   compactsupport=false, vect_distance="norm-1")
+        train!(s_eu, data; epochs=3)
+        train!(s_inf, data; epochs=3)
+        train!(s_l1, data; epochs=3)
+        @test all(isfinite, s_inf.codebook)
+        @test all(isfinite, s_l1.codebook)
+        # Different metrics generally yield different codebooks after updates
+        @test s_inf.codebook != s_eu.codebook || s_l1.codebook != s_eu.codebook
+
+        # Sparse rejects non-euclidean
+        @test_throws ErrorException train!(
+            Som(2, 2; vect_distance="norm-inf"), sparse(data); epochs=1)
+    end
+
+    @testset "file IO (.lrn, libsvm, dumps)" begin
+        mktempdir() do dir
+            # plain dense + roundtrip via libsvm
+            dense = Float32[0.1 0.3 0.0; 0.2 0.0 0.4]
+            plain = joinpath(dir, "data.txt")
+            open(plain, "w") do io
+                println(io, "0.1 0.2")
+                println(io, "0.3 0.0")
+                println(io, "0.0 0.4")
+            end
+            @test read_dense_matrix(plain) == dense
+
+            lsvm = joinpath(dir, "data.svm")
+            write_libsvm(lsvm, dense; labels=[1, -1, 1])
+            sp = read_libsvm(lsvm)
+            @test size(sp) == (2, 3)
+            @test Matrix(sp) ≈ dense
+
+            # .lrn: key column (9) + two feature columns (1)
+            lrn = joinpath(dir, "data.lrn")
+            open(lrn, "w") do io
+                println(io, "%3")
+                println(io, "%3")
+                println(io, "%9 1 1")
+                println(io, "%key a b")
+                println(io, "1 0.1 0.2")
+                println(io, "2 0.3 0.0")
+                println(io, "3 0.0 0.4")
+            end
+            @test read_dense_matrix(lrn) == dense
+
+            som = Som(2, 2; initialcodebook=zeros(Float32, 2, 4),
+                      gridtype="rectangular", compactsupport=false)
+            train!(som, dense; epochs=2)
+            prefix = joinpath(dir, "out")
+            save_som_dumps(prefix, som)
+            @test isfile(prefix * ".wts")
+            @test isfile(prefix * ".bm")
+            @test isfile(prefix * ".umx")
+            cb2 = read_dense_matrix(prefix * ".wts")
+            @test size(cb2) == size(som.codebook)
+            @test sum(abs, cb2 .- som.codebook) < 1e-5
+
+            bm_lines = filter(!startswith("%"), readlines(prefix * ".bm"))
+            @test length(bm_lines) == 3
+            parts = split(bm_lines[1])
+            @test parts[1] == "0"
+            @test parse(Int, parts[2]) == Int(som.bmus[1, 1]) - 1
+            @test parse(Int, parts[3]) == Int(som.bmus[2, 1]) - 1
+        end
+    end
 end
+

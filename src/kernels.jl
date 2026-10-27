@@ -1,8 +1,10 @@
 # KernelAbstractions kernels for BMU search and batch codebook update.
 # Numerics follow somoclu denseCpuKernels.cpp (non-MPI path).
+# dist_kind: 0=euclidean, 1=norm-inf, 2=norm-p (p passed separately).
 
 @kernel inbounds=true function find_bmu_kernel!(bmu_x, bmu_y, @Const(codebook), @Const(data),
-                                                nSomX::Int, nSomY::Int, nDimensions::Int)
+                                                nSomX::Int, nSomY::Int, nDimensions::Int,
+                                                dist_kind::Int, p::Float32)
     n = @index(Global, Linear)
     nVectors = size(data, 2)
     if n <= nVectors
@@ -13,11 +15,27 @@
             for som_x in 0:(nSomX - 1)
                 neuron = som_y * nSomX + som_x + 1
                 dist = 0.0f0
-                for d in 1:nDimensions
-                    Δ = codebook[d, neuron] - data[d, n]
-                    dist += Δ * Δ
+                if dist_kind == 1
+                    m = 0.0f0
+                    for d in 1:nDimensions
+                        Δ = abs(codebook[d, neuron] - data[d, n])
+                        Δ > m && (m = Δ)
+                    end
+                    dist = m
+                elseif dist_kind == 2
+                    # Match C++ NormPDistance (double accumulator)
+                    acc = 0.0
+                    for d in 1:nDimensions
+                        acc += abs(Float64(codebook[d, neuron]) - Float64(data[d, n]))^Float64(p)
+                    end
+                    dist = Float32(acc^(1.0 / Float64(p)))
+                else
+                    for d in 1:nDimensions
+                        Δ = codebook[d, neuron] - data[d, n]
+                        dist += Δ * Δ
+                    end
+                    dist = sqrt(dist)
                 end
-                dist = sqrt(dist)
                 if (som_y == 0 && som_x == 0) || dist < mindist
                     mindist = dist
                     best_x = som_x
@@ -74,9 +92,11 @@ end
     end
 end
 
-function launch_find_bmus!(backend, bmu_x, bmu_y, codebook, data, nSomX, nSomY, nDimensions)
+function launch_find_bmus!(backend, bmu_x, bmu_y, codebook, data, nSomX, nSomY, nDimensions;
+                           dist_kind::Int=0, p::Float32=2.0f0)
     kernel = find_bmu_kernel!(backend)
-    kernel(bmu_x, bmu_y, codebook, data, Int(nSomX), Int(nSomY), Int(nDimensions);
+    kernel(bmu_x, bmu_y, codebook, data, Int(nSomX), Int(nSomY), Int(nDimensions),
+           Int(dist_kind), Float32(p);
            ndrange = size(data, 2))
     KernelAbstractions.synchronize(backend)
     return nothing

@@ -78,8 +78,10 @@ function train_epoch!(backend, codebook, data, bmu_x, bmu_y, numerator, denomina
                       nSomX::Int, nSomY::Int, nDimensions::Int,
                       radius::Float32, scale::Float32,
                       compact_support::Bool, gaussian::Bool, std_coeff::Float32,
-                      rectangular::Bool, toroid::Bool; only_bmus::Bool=false)
-    launch_find_bmus!(backend, bmu_x, bmu_y, codebook, data, nSomX, nSomY, nDimensions)
+                      rectangular::Bool, toroid::Bool;
+                      only_bmus::Bool=false, dist_kind::Int=0, p::Float32=2.0f0)
+    launch_find_bmus!(backend, bmu_x, bmu_y, codebook, data, nSomX, nSomY, nDimensions;
+                      dist_kind=dist_kind, p=p)
     only_bmus && return nothing
     launch_update_codebook!(backend, codebook, data, bmu_x, bmu_y, numerator, denominator,
                             nSomX, nSomY, nDimensions,
@@ -103,6 +105,8 @@ function train_som!(codebook::AbstractMatrix{Float32}, data::AbstractMatrix{Floa
                     rectangular::Bool=true,
                     toroid::Bool=false,
                     verbose::Int=0,
+                    dist_kind::Int=0,
+                    p::Float32=2.0f0,
                     rng::AbstractRNG=Random.default_rng())
     nDimensions, nVectors = size(data)
     size(codebook, 1) == nDimensions || throw(DimensionMismatch("codebook/data dimensions"))
@@ -142,14 +146,14 @@ function train_som!(codebook::AbstractMatrix{Float32}, data::AbstractMatrix{Floa
         train_epoch!(backend, codebook, data, bmu_x, bmu_y, numerator, denominator,
                      nSomX, nSomY, nDimensions,
                      radius, scale, compact_support, gaussian, std_coeff,
-                     rectangular, toroid)
+                     rectangular, toroid; dist_kind=dist_kind, p=p)
     end
 
     # Final BMU-only pass (matches C++ train())
     train_epoch!(backend, codebook, data, bmu_x, bmu_y, numerator, denominator,
                  nSomX, nSomY, nDimensions,
                  rN, sN, compact_support, gaussian, std_coeff,
-                 rectangular, toroid; only_bmus=true)
+                 rectangular, toroid; only_bmus=true, dist_kind=dist_kind, p=p)
 
     return bmu_x, bmu_y
 end

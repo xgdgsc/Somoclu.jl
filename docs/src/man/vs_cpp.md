@@ -24,9 +24,9 @@ Python package’s `1.7.x` series).
 | PCA init | Python / Julia wrappers | Yes |
 | U-matrix | `uMatrix.cpp` | Yes |
 | BMUs | Yes | Yes (1-based, legacy axis swap) |
-| Feature distances | euclidean, `norm-inf`, `norm-p` (dense CPU) | Euclidean only |
-| CLI binary | `somoclu` | No |
-| File IO (`.lrn`, libsvm, codebook dumps) | `io.cpp` | No (in-memory matrices) |
+| Feature distances | euclidean, `norm-inf`, `norm-p` (dense CPU) | Yes on dense KA path (`Som(; vect_distance=...)`); sparse stays Euclidean |
+| CLI binary | `somoclu` | No (library API only) |
+| File IO (`.lrn`, libsvm, codebook dumps) | `io.cpp` | Yes — `read_dense_matrix`, `read_libsvm` / `write_libsvm`, `save_codebook` / `save_bmus` / `save_umatrix` / `save_som_dumps` |
 | Training snapshots (`-s`) | Yes | No |
 | Clustering API | Python `cluster()` (sklearn) | No (`som.clusters` only for plot colors) |
 | Visualizations | Python matplotlib, etc. | PlotlyLight (`view_*`) |
@@ -59,8 +59,19 @@ train!(som, X; epochs=15)
 - Default `compactsupport=true` matches the historical Julia/Python wrapper
   (CLI default is false).
 
+## Distances and file IO
+
+```julia
+som = Som(40, 30; vect_distance="norm-inf")   # or "norm-1", "norm-2.5", …
+train!(som, data)
+
+X = read_dense_matrix("data.lrn")             # also plain txt / .wts
+S = read_libsvm("data.svm")
+save_som_dumps("out", som)                    # out.wts / out.bm / out.umx
+```
+
 ## Not planned as C++ clones
 
-MPI, CLI, and ESOM-style file IO are omitted for now. MPI is feasible later with
+MPI and the `somoclu` CLI binary are omitted for now. MPI is feasible later with
 `MPI.jl` (broadcast codebook / reduce numerator–denominator per epoch) if
 multi-node scaling is needed.

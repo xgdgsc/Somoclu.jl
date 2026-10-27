@@ -34,6 +34,8 @@ Requires Julia **1.13+**.
 - Gaussian / bubble neighbourhoods; linear / exponential cooling
 - Random or PCA codebook initialization
 - U-matrix and BMUs
+- Dense feature distances: `euclidean`, `norm-inf`, `norm-p` (`Som(; vect_distance=...)`)
+- File IO matching C++ CLI: `.lrn`, libsvm, ESOM `.wts`/`.bm`/`.umx` dumps
 - PlotlyLight visualizations (`view_umatrix`, `view_component_planes`, …)
 
 ## Usage
@@ -70,6 +72,18 @@ view_similarity_matrix(som)
 view_umatrix(som; filename="umatrix.html")
 ```
 
+### Distances and file IO
+
+```julia
+som = Som(40, 30; vect_distance="norm-1")  # euclidean | norm-inf | norm-p
+train!(som, data)
+
+X = read_dense_matrix("data.lrn")
+S = read_libsvm("data.svm")
+write_libsvm("out.svm", S)
+save_som_dumps("out", som)  # out.wts, out.bm, out.umx
+```
+
 ### GPU (CUDA.jl example; dense only)
 
 ```julia
@@ -85,8 +99,9 @@ train!(som, data)
 | Dense training | CPU (+ optional CUDA) | KA: PoCL `CPU()`, CUDA, AMDGPU, oneAPI, Metal |
 | Sparse training | CPU (`-k 2` / libsvm) | `SparseMatrixCSC` CPU (+ Threads) |
 | MPI | Optional | **No** |
-| CLI / file IO (`.lrn`, libsvm, dumps) | Yes | **No** (in-memory) |
-| `norm-inf` / `norm-p` distances | Dense CPU | **No** (Euclidean only) |
+| CLI binary | Yes | **No** (library API) |
+| File IO (`.lrn`, libsvm, dumps) | Yes | **Yes** (`read_*` / `save_*`) |
+| `norm-inf` / `norm-p` distances | Dense CPU | **Yes** (dense); sparse Euclidean only |
 | Snapshots / `cluster()` | CLI / Python | **No** |
 | Plotly `view_*` | — | **Yes** |
 

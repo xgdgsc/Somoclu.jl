@@ -53,6 +53,25 @@ train!(som, data; epochs=10)
 
 See [Compared to C++](vs_cpp.md) for how this maps to the upstream `-k 2` path.
 
+### Feature distances (dense)
+
+```julia
+som = Som(40, 30; vect_distance="norm-inf")  # or "norm-1", "norm-2.5", …
+train!(som, data)
+```
+
+Sparse `train!` requires `vect_distance="euclidean"` (C++ sparse path is Euclidean-only).
+
+### File IO
+
+```julia
+X = read_dense_matrix("data.lrn")   # also plain whitespace / `.wts`
+S = read_libsvm("bag.svm")
+write_libsvm("out.svm", X)
+train!(som, X; epochs=10)
+save_som_dumps("run", som)          # run.wts / run.bm / run.umx
+```
+
 After training:
 
 | Field | Shape | Meaning |

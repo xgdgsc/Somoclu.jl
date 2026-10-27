@@ -7,6 +7,7 @@ matching C++ `sparseCpuKernels.cpp`.
 
 The public API mirrors the historical Somoclu.jl C++ wrapper (`Som`, `train!`) plus
 Python-style visualization helpers via PlotlyLight (`view_umatrix`, etc.).
+File IO mirrors C++ `io.cpp` (`.lrn`, libsvm, ESOM `.wts`/`.bm`/`.umx` dumps).
 """
 module Somoclu
 
@@ -21,9 +22,13 @@ using Statistics
 export Som, train!
 export codebook_plane, get_surface_state
 export view_umatrix, view_component_planes, view_activation_map, view_similarity_matrix
+export parse_vect_distance, feature_distance
+export read_dense_matrix, read_libsvm, write_libsvm
+export save_codebook, save_bmus, save_umatrix, save_som_dumps
 
 include("distances.jl")
 include("neighborhood.jl")
+include("vect_distance.jl")
 include("kernels.jl")
 include("umatrix.jl")
 include("train.jl")
@@ -43,6 +48,9 @@ Self-organizing map of size `ncolumns` × `nrows`.
 - `maptype::String="planar"`: `"planar"` or `"toroid"`.
 - `neighborhood::String="gaussian"`: `"gaussian"` or `"bubble"`.
 - `stdcoeff::Float32=0.5f0`: Gaussian neighborhood coefficient.
+- `vect_distance::String="euclidean"`: Feature distance for dense BMU search —
+  `"euclidean"`, `"norm-inf"`, or `"norm-p"` with any `p > 0` (e.g. `"norm-1"`).
+  Sparse training requires Euclidean.
 - `verbose::Integer=0`: Verbosity level 0–2.
 - `backend`: KernelAbstractions backend (default `CPU()`).
 """
@@ -56,6 +64,7 @@ mutable struct Som
     stdcoeff::Float32
     verbose::Int
     initialization::String
+    vect_distance::String
     backend::KernelAbstractions.Backend
     codebook::Union{Nothing,AbstractMatrix{Float32}}
     bmus::Union{Nothing,Matrix{Int32}}
@@ -72,6 +81,7 @@ mutable struct Som
                  stdcoeff::Real=0.5,
                  verbose::Integer=0,
                  initialization::String="random",
+                 vect_distance::String="euclidean",
                  initialcodebook=nothing,
                  backend=CPU())
         maptype in ("planar", "toroid") || error("Unknown map type!")
@@ -79,6 +89,7 @@ mutable struct Som
         neighborhood in ("gaussian", "bubble") || error("Unknown neighborhood function!")
         initialization in ("random", "pca") || error("Unknown initialization!")
         0 <= verbose <= 2 || error("Unsupported verbosity level!")
+        parse_vect_distance(vect_distance)  # validate early
 
         codebook = if initialcodebook === nothing
             nothing
@@ -87,7 +98,7 @@ mutable struct Som
         end
         new(Int(ncolumns), Int(nrows), maptype, gridtype, compactsupport,
             neighborhood, Float32(stdcoeff), Int(verbose), initialization,
-            backend, codebook, nothing, nothing, nothing, nothing, nothing)
+            String(vect_distance), backend, codebook, nothing, nothing, nothing, nothing, nothing)
     end
 end
 
@@ -97,8 +108,9 @@ end
 Train `som` on `data` of size `nDimensions × nVectors` (columns are samples).
 
 - Dense `AbstractMatrix`: KernelAbstractions path (`som.backend`, default PoCL `CPU()`).
+  BMU search uses `som.vect_distance` (euclidean / norm-inf / norm-p).
 - `SparseMatrixCSC`: C++-compatible sparse CPU kernel (ignores `som.backend`; codebook
-  stays dense). Prefer this for high-dimensional sparse inputs.
+  stays dense). Requires `som.vect_distance == "euclidean"`.
 
 # Arguments
 - `epochs::Integer=10`
@@ -130,6 +142,7 @@ function train!(som::Som, data::AbstractMatrix{<:Real};
     rectangular = rectangular_grid(som.gridtype)
     toroid = toroid_map(som.maptype)
     gaussian = som.neighborhood == "gaussian"
+    dist_kind, p = vect_distance_kind(parse_vect_distance(som.vect_distance))
 
     bmu_x, bmu_y = train_som!(codebook, data_dev, nSomX, nSomY;
                               nEpoch=Int(epochs),
@@ -145,6 +158,8 @@ function train!(som::Som, data::AbstractMatrix{<:Real};
                               rectangular=rectangular,
                               toroid=toroid,
                               verbose=som.verbose,
+                              dist_kind=dist_kind,
+                              p=p,
                               rng=rng)
 
     _finish_train!(som, Array(codebook), Array(bmu_x), Array(bmu_y), data32,
@@ -162,6 +177,8 @@ function train!(som::Som, data::SparseMatrixCSC{<:Real};
                 scalecooling::String="linear",
                 rng::AbstractRNG=Random.default_rng())
     _check_cooling(radiuscooling, scalecooling)
+    som.vect_distance == "euclidean" ||
+        error("Sparse training only supports vect_distance=\"euclidean\" (got \"$(som.vect_distance)\")")
     # Keep sparse structure; cast values to Float32 view via SparseMatrixCSC{Float32}
     data_f32 = SparseMatrixCSC{Float32,Int}(data)
     nDimensions, nVectors = size(data_f32)
@@ -242,6 +259,7 @@ function adapt_storage(backend::KernelAbstractions.Backend, A::AbstractArray{Flo
     return B
 end
 
+include("io.jl")
 include("plot.jl")
 
 end # module
