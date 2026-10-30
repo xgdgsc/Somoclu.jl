@@ -15,6 +15,7 @@ using KernelAbstractions
 using LinearAlgebra
 using MultivariateStats: PCA, fit, principalvars, projection
 using PlotlyLight
+using PrecompileTools: @setup_workload, @compile_workload
 using Random
 using SparseArrays
 using Statistics
@@ -261,5 +262,6 @@ end
 
 include("io.jl")
 include("plot.jl")
+include("precompile.jl")
 
 end # module
